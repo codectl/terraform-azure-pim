@@ -1,29 +1,38 @@
 module "naming" {
-  source  = "cloudnationhq/naming/azure"
+  source  = "codectl/naming/azure"
   version = "~> 0.1"
 
   suffix = ["demo", "dev"]
 }
 
+module "regions" {
+  source  = "codectl/locations/azure"
+  version = "~> 1.0"
+
+  location = {
+    primary = "westeurope"
+  }
+}
+
 module "rg" {
-  source  = "cloudnationhq/rg/azure"
-  version = "~> 3.0"
+  source  = "codectl/rg/azure"
+  version = "~> 1.0"
 
   groups = {
     demo = {
       name     = "${module.naming.resource_group.name_unique}-demo"
-      location = "westeurope"
+      location = module.regions.location.primary.name
     }
     test = {
       name     = "${module.naming.resource_group.name_unique}-test"
-      location = "westeurope"
+      location = module.regions.location.primary.name
     }
   }
 }
 
 module "pim" {
-  source  = "cloudnationhq/pim/azure"
-  version = "~> 2.0"
+  source  = "codectl/pim/azure"
+  version = "~> 1.0"
 
   pim_assignments     = local.pim_assignments
   management_policies = local.management_policies
